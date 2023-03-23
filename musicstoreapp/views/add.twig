@@ -12,6 +12,9 @@
 
 
 <div class="container">
+    {% extends "layout.twig" %}
+    {% block title %} Agregar canción {% endblock %}
+    {% block main_container %}
   <h2>Agregar canción</h2>
   <form class="form-horizontal" method="post" action="/songs/add">
     <div class="form-group">
@@ -59,6 +62,7 @@
       </div>
     </div>
   </form>
+    {% endblock %}
 </div>
 
 </body>
