@@ -1,0 +1,19 @@
+{% extends "layout.twig" %}
+{% block title %} Tienda – uoMusic {% endblock %}
+{% block main_container %}
+    <h2>Autores</h2>
+    <div class="row">
+        {% for author in authors %}
+            <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3">
+                <div style="width:200px">
+                    <a href="/authors">
+                        <img src="/images/user.png" alt="logo"/>
+                        <div>{{ author.nombre }}</div>
+                        <div class="small">{{ author.grupo }}</div>
+                        <div class="small">{{ author.role }}</div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
