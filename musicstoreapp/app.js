@@ -10,6 +10,13 @@ let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+let fileUpload = require('express-fileupload');
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+  createParentPath: true
+}));
+app.set('uploadPath', __dirname);
+
 const { MongoClient } = require("mongodb");
 const url = 'mongodb+srv://admin:1ftm2ftsInwrSiwyg@musicstoreapp.gpuhntq.mongodb.net/?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
