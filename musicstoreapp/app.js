@@ -32,6 +32,14 @@ app.set('crypto', crypto);
 const { MongoClient } = require("mongodb");
 const url = 'mongodb+srv://admin:1ftm2ftsInwrSiwyg@musicstoreapp.gpuhntq.mongodb.net/?retryWrites=true&w=majority';
 app.set('connectionStrings', url);
+
+const userSessionRouter = require('./routes/userSessionRouter');
+const userAudiosRouter = require('./routes/userAudiosRouter');
+app.use("/songs/add",userSessionRouter);
+app.use("/publications",userSessionRouter);
+app.use("/audios/",userAudiosRouter);
+app.use("/shop/",userSessionRouter)
+
 let songsRepository = require("./repositories/songsRepository.js");
 songsRepository.init(app, MongoClient);
 
