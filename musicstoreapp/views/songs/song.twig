@@ -14,4 +14,40 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <form class="form-horizontal" method="post" action="/comments/{{song._id}}" enctype="multipart/form-data">
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="text">Comentario:</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="text" name="text" placeholder="Comenta algo" required />
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary">Agregar comentario</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Comentario</th>
+                <th>Autor</th>
+                <th class="col-md-1"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for comment in comments %}
+                <tr>
+                    <td>{{ comment.text }}</td>
+                    <td>{{ comment.author }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
