@@ -39,6 +39,8 @@ app.use("/songs/add",userSessionRouter);
 app.use("/publications",userSessionRouter);
 app.use("/audios/",userAudiosRouter);
 app.use("/shop/",userSessionRouter);
+app.use("/songs/buy",userSessionRouter);
+app.use("/purchases",userSessionRouter);
 
 const userAuthorRouter = require('./routes/userAuthorRouter');
 app.use("/songs/edit", userAuthorRouter);
