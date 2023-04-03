@@ -19,7 +19,7 @@ module.exports = function (app, commentsRepository) {
                     }
                 });
             } else {
-                res.send("Se ha producido un error al insertar el comentario");
+                res.redirect("/comments/:song_id?message=No se puede enviar un comentario vacío.&messageType=alert-danger");
             }
         }
     });
