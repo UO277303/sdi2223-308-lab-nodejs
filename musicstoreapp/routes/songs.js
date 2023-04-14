@@ -61,15 +61,14 @@ module.exports = function (app, songsRepository, commentsRepository) {
     app.get('/songs/:id', function (req, res) {
         let filter = { _id: ObjectId(req.params.id) };
         let options = {};
-        songsRepository.findSong(filter, options).then(song => {
+        songsRepository.findSong(filter, options).then(async song => {
             let user = req.session.user;
-            canBuySong(song._id, user, function(canBuy) {
-                let commentsFilter = { song_id: song._id }
-                commentsRepository.getComments(commentsFilter, options).then(comments => {
-                    res.render("songs/song.twig", {song: song, comments: comments, canBuy: canBuy});
-                }).catch(error => {
-                    res.send("Se ha producido un error al buscar los comentarios de la canción" + error);
-                });
+            let canBuy = await canBuySong(song._id, user);
+            let commentsFilter = { song_id: song._id }
+            commentsRepository.getComments(commentsFilter, options).then(comments => {
+                res.render("songs/song.twig", {song: song, comments: comments, canBuy: canBuy});
+            }).catch(error => {
+                res.send("Se ha producido un error al buscar los comentarios de la canción" + error);
             });
         }).catch(error => {
             res.send("Se ha producido un error al buscar la canción " + error);
@@ -193,25 +192,24 @@ module.exports = function (app, songsRepository, commentsRepository) {
         }
     };
 
-    app.get('/songs/buy/:id', function (req, res) {
+    app.get('/songs/buy/:id', async function (req, res) {
         let songId = ObjectId(req.params.id);
         let shop = {
             user: req.session.user,
             songId: songId
         }
-        canBuySong(songId, shop.user, function(canBuy) {
-            if (canBuy) {
-                songsRepository.buySong(shop, function (shopId) {
-                    if (shopId == null) {
-                        res.send("Error al realizar la compra");
-                    } else {
-                        res.redirect("/purchases");
-                    }
-                })
-            } else {
-                res.send("No es posible comprar la canción");
-            }
-        })
+        let canBuy = await canBuySong(songId, shop.user);
+        if (canBuy) {
+            songsRepository.buySong(shop, function (shopId) {
+                if (shopId == null) {
+                    res.send("Error al realizar la compra");
+                } else {
+                    res.redirect("/purchases");
+                }
+            })
+        } else {
+            res.send("No es posible comprar la canción");
+        }
     });
 
     app.get('/purchases', function (req, res) {
@@ -234,27 +232,26 @@ module.exports = function (app, songsRepository, commentsRepository) {
         });
     });
 
-    function canBuySong(songId, user, callbackFunction) {
+    async function canBuySong(songId, user, callbackFunction) {
         filterSongAuthor = {$and: [{"_id": songId}, {"author": user}]};
         filterBoughtSong = {$and: [{"songId": songId}, {"user": user}]};
         options = {};
-        songsRepository.getSongs(filterSongAuthor).then(songs => {
+
+        try {
+            let songs = await songsRepository.getSongs(filterSongAuthor, options);
             if (songs == null || songs.length > 0) {
-                callbackFunction(false);
+                return false;
             } else {
-                songsRepository.getPurchases(filterBoughtSong).then(songsIds => {
-                    if (songsIds == null || songsIds.length > 0) {
-                        callbackFunction(false);
-                    } else {
-                        callbackFunction(true);
-                    }
-                }).catch(error => {
-                    callbackFunction(false);
-                });
+                let songsIds = await songsRepository.getPurchases(filterBoughtSong, options);
+                if (songsIds == null || songsIds.length > 0) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
-        }).catch(error => {
-            callbackFunction(false);
-        });
+        } catch (error) {
+            return error;
+        }
     }
 
 };
