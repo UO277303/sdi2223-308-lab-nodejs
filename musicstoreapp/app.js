@@ -61,6 +61,7 @@ require("./routes/users.js")(app, usersRepository);
 var indexRouter = require('./routes/index');
 require("./routes/songs.js")(app, songsRepository, commentsRepository);
 require("./routes/authors.js")(app);
+require("./routes/api/songsAPIv1.0.js")(app, songsRepository);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
